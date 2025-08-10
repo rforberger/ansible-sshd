@@ -11,7 +11,7 @@
     - { regexp: "^PasswordAuthentication", line: "PasswordAuthentication no" }
     - { regexp: "^PermitRootLogin", line: "PermitRootLogin no" }
 
-- name: Set some lines
+- name: Set some security lines
   ansible.builtin.lineinfile:
     path: "/etc/ssh/sshd_config"
     line: "{{ item }}"
@@ -19,7 +19,8 @@
   notify: Restart sshd
   loop:
     - "Port 2223"
-    - "KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256"
+    - "KexAlgorithms sntrup761x25519-sha512,sntrup761x25519-sha512@openssh.com,mlkem768x25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256"
+    #- "KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256"
     - "Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr"
     - "MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com"
     - "{% if wireguard.ips.internal is defined %}ListenAddress {{ wireguard.ips.internal }}{% else %}{% if ansible_wgclient0.ipv4.address is defined %}ListenAddress {{ ansible_wgclient0.ipv4.address }}{% endif %}{% endif %}"
