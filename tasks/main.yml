@@ -9,6 +9,7 @@
   notify: Restart sshd
   loop:
     - { regexp: "^PasswordAuthentication", line: "PasswordAuthentication no" }
+    - { regexp: "^X11Forwarding", line: "X11Forwarding no" }
     - { regexp: "^PermitRootLogin", line: "PermitRootLogin no" }
 
 - name: Set some security lines
