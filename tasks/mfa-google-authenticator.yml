@@ -1,0 +1,34 @@
+- name: install pkgs (2FA)
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - libpam-google-authenticator
+
+- name: Set some security lines (2FA)
+  ansible.builtin.lineinfile:
+    path: "/etc/pam.d/sshd"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - { regexp: "^@include common-auth", line: "auth required pam_google_authenticator.so" }
+
+- name: Enable KbdInteractiveAuthentication (2FA)
+  ansible.builtin.lineinfile:
+    path: "/etc/ssh/sshd_config"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    validate: "sshd -t -f %s"
+  notify: Restart sshd
+  loop:
+    - { regexp: "^KbdInteractiveAuthentication", line: "KbdInteractiveAuthentication yes" }
+
+- name: Set some security lines (2FA)
+  ansible.builtin.lineinfile:
+    path: "/etc/ssh/sshd_config"
+    line: "{{ item }}"
+    validate: "sshd -t -f %s"
+  notify: Restart sshd
+  loop:
+    - "AuthenticationMethods publickey,keyboard-interactive"

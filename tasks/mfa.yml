@@ -1,0 +1,2 @@
+- include_tasks: mfa-google-authenticator.yml
+  when: sshd.mfa.enabled is defined and sshd.mfa.enabled == True and sshd.mfa.mfa_google_authenticator.enabled is defined and sshd.mfa.mfa_google_authenticator.enabled == True
